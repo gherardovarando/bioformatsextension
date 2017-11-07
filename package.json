@@ -1,0 +1,30 @@
+{
+  "name": "bioformatsextension",
+  "version": "0.0.1",
+  "description": "electrongui extension to use bio formats tools",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gherardovarando/bioformatsextension.git"
+  },
+  "keywords": [
+    "bio-formats",
+    "electrongui",
+    "guiextension",
+    "image",
+    "microscopy"
+  ],
+  "author": "gherardo varando <gherardo.varando@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gherardovarando/bioformatsextension/issues"
+  },
+  "homepage": "https://github.com/gherardovarando/bioformatsextension#readme",
+  "dependencies": {
+    "electrongui": "^0.6.4",
+    "extract-zip": "^1.6.6"
+  }
+}

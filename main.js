@@ -108,7 +108,7 @@ class BioFormatsExtension extends GuiExtension {
     this._configuration.path = path
     storage.set('bioformats-configuration', this._configuration, (err)=>{
       if (err){
-        this.gui.alerts.add('Error saving Bio-Formats options','warning')
+        if (err) this.gui.alerts.add('Error saving Bio-Formats options','warning')
       }
     })
   }

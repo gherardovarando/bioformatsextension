@@ -53,7 +53,9 @@ class ConvertTask extends Task {
     })
 
     ch.stdout.on('data', (data) => {
-      this.emit('message', data)
+      this.emit('message', {
+        data: data
+      })
     })
 
     ch.on('close', (code) => {

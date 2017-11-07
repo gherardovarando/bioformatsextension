@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/gherardovarando/bioformatsextension#readme",
   "dependencies": {
-    "electrongui": "^0.6.4",
-    "extract-zip": "^1.6.6"
+    "electron-json-storage": "^4.0.2",
+    "electrongui": "^0.6.4"
   }
 }

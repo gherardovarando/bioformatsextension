@@ -36,7 +36,8 @@ const {
 const ConvertTask = require('./tasks/Convert.js')
 const http = require('http')
 const fs = require('fs')
-const extract = require('extract-zip')
+const storage = require('electron-json-storage')
+
 
 class BioFormatsExtension extends GuiExtension {
 
@@ -56,18 +57,26 @@ class BioFormatsExtension extends GuiExtension {
           click: () => this._configure()
         }, {
           label: 'Download and install',
-          click: ()=> this.downloadBFtools()
+          click: () => this.downloadBFtools()
         }]
       }]
     })
     this._configuration = {
-      path: ''
+      path: undefined
     }
     if (config && config.path) this._configuration.path = config.path
   }
 
   activate() {
     this.appendMenu()
+    storage.get('bioformats-configuration', (error, data) => {
+      if (error) return
+      if (data) {
+        this._configuration.path = (typeof data.path == 'string') ? data.path : undefined
+        this._configuration.memory = (data.memory > 0) ? data.memory : this.maxMemory
+        this._configuration.stackMemory = (data.stackMemory > 0) ? data.stackMemory : this.maxStackMemory
+      }
+    })
     //this.gui.alerts.add('MyExtension activated', 'default')
     super.activate()
   }
@@ -89,7 +98,17 @@ class BioFormatsExtension extends GuiExtension {
       properties: ['openDirectory']
     }, (filepaths) => {
       if (filepaths[0]) {
-        this._configuration.path = filepaths[0]
+        this._setPath(filepaths[0])
+      }
+    })
+  }
+
+  _setPath(path) {
+    if (!typeof path === 'string') return
+    this._configuration.path = path
+    storage.set('bioformats-configuration', this._configuration, (err)=>{
+      if (err){
+        this.gui.alerts.add('Error saving Bio-Formats options','warning')
       }
     })
   }
@@ -108,7 +127,7 @@ class BioFormatsExtension extends GuiExtension {
       file.on('finish', () => {
         alert.setBodyText('file downloaded')
         file.close(() => {
-          this._configuration.path = dir
+          this._setPath(dir)
           alert.remove()
           this.gui.alerts.add(`Bio-Formats downloaded and linked: \n file in ${dir}`, 'success')
         })
@@ -130,6 +149,13 @@ class BioFormatsExtension extends GuiExtension {
     })
     task.on('success', (e) => {
       this.gui.alerts.add(`Completed Bio-Formats converter`, 'success')
+    })
+    task.on('message', (e) => {
+      if (this._progressAlert) {
+        this._progressAlert.setBodyText(e.data)
+      } else {
+        this._progressAlert = this.gui.alerts.add(`Bio-Formats converter \n file:${input} \n ${e.data}`, 'progress')
+      }
     })
   }
 

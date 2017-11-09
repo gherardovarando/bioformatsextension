@@ -139,22 +139,25 @@ class BioFormatsExtension extends GuiExtension {
     if (!input) return
     if (!output) return
     let task = new ConvertTask(input, output)
+    let alert
     this.gui.taskManager.addTask(task)
     task.run(this._configuration.path)
     task.on('error', (e) => {
       this.gui.alerts.add(`Error Bio-Formats converter: ${e.data}`, 'warning')
     })
     task.on('fail', (e) => {
+      alert.remove()
       this.gui.alerts.add(`Failed Bio-Formats converter: ${e.error}`, 'danger')
     })
     task.on('success', (e) => {
+      alert.remove()
       this.gui.alerts.add(`Completed Bio-Formats converter`, 'success')
     })
     task.on('message', (e) => {
-      if (this._progressAlert) {
-        this._progressAlert.setBodyText(e.data)
+      if (Alert.is(alert)) {
+        alert.setBodyText(e.data)
       } else {
-        this._progressAlert = this.gui.alerts.add(`Bio-Formats converter \n file:${input} \n ${e.data}`, 'progress')
+        alert = this.gui.alerts.add(`Bio-Formats converter \n file:${input} \n ${e.data}`, 'progress')
       }
     })
   }
